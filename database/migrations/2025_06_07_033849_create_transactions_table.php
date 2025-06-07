@@ -8,11 +8,34 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * //id (PK)
+    // user_id (FK → users.id)
+    // account_id (FK → accounts.id)
+    // category_id (FK → categories.id)
+    // amount             -- nominal uang
+    // type               -- enum: 'income' / 'expense' / 'transfer'
+    // description (optional)
+    // date               -- tanggal transaksi
+    // created_at
+    // updated_at
      */
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onDelete('cascade');
+            $table->foreignId('account_id')
+                ->constrained('accounts')
+                ->onDelete('cascade');
+            $table->foreignId('category_id')
+                ->constrained('categories')
+                ->onDelete('cascade');
+            $table->decimal('amount', 15, 2); // nominal uang
+            $table->enum('type', ['income', 'expense', 'transfer']); // tipe transaksi: 'income' / 'expense' / 'transfer'
+            $table->string('description')->nullable(); // deskripsi transaksi, opsional
+            $table->date('date'); // tanggal transaksi
             $table->timestamps();
         });
     }
