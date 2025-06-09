@@ -7,6 +7,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -28,12 +29,14 @@ class BudgetsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\TextInput::make('amount')
-                    ->numeric()
-                    ->required()
                     ->label('Batas Maksimal')
+                    ->default(0)
+                    ->required()
                     ->prefix('IDR ')
-                    ->maxLength(15)
-                    ->placeholder('0.00'),
+                    ->placeholder('0')
+                    ->mask(RawJs::make('$money($input, \'.\', \',\', 0, \'IDR \', \'\')')) // Menggunakan $money helper
+                    ->stripCharacters(',') // Hapus titik pemisah ribuan sebelum disimpan
+                    ->numeric(), // Pastikan input dianggap sebagai angka
 
                 Forms\Components\Select::make('category_id')
                     ->relationship('category', 'name')

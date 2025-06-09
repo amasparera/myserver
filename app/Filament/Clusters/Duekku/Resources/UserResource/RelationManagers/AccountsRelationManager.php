@@ -7,8 +7,9 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\TextInput;
+use Filament\Support\RawJs;
+
 
 class AccountsRelationManager extends RelationManager
 {
@@ -28,14 +29,18 @@ class AccountsRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('initial_balance')
-                    ->numeric()
-                    ->default(0)
+
+
+
+                TextInput::make('initial_balance')
                     ->label('Saldo Awal')
+                    ->default(0)
                     ->required()
                     ->prefix('IDR ')
-                    ->maxLength(15)
-                    ->placeholder('0.00')
+                    ->placeholder('0')
+                    ->mask(RawJs::make('$money($input, \'.\', \',\', 0, \'IDR \', \'\')')) // Menggunakan $money helper
+                    ->stripCharacters(',') // Hapus titik pemisah ribuan sebelum disimpan
+                    ->numeric(), // Pastikan input dianggap sebagai angka
             ]);
     }
 

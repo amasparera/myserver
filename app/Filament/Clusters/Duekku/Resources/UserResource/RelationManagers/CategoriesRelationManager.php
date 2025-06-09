@@ -7,6 +7,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -34,7 +35,7 @@ class CategoriesRelationManager extends RelationManager
                     ->options([
                         'income' => 'Pendapatan',
                         'expense' => 'Pengeluaran',
-                        'save' => 'Tabungan',
+                        'transfer' => 'Transfer',
                     ])
                     ->required()
                     ->label('Tipe Kategori'),
@@ -53,7 +54,7 @@ class CategoriesRelationManager extends RelationManager
                     ->formatStateUsing(fn($state) => match ($state) {
                         'income' => 'Pendapatan',
                         'expense' => 'Pengeluaran',
-                        'save' => 'Tabungan',
+                        'transfer' => 'Transfer',
                         default => $state,
                     }),
             ])

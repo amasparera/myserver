@@ -11,7 +11,7 @@ return new class extends Migration
      * //id (PK)
     // user_id (FK → users.id)
     // name               -- contoh: "Makanan", "Transportasi"
-    // type               -- enum: 'income' / 'expense'
+    // type               -- enum: 'income' / 'expense' / 'transfer'
     // icon (optional)    -- bisa berupa nama ikon
     // created_at
     // updated_at
@@ -24,7 +24,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
             $table->string('name'); // contoh: "Makanan", "Transportasi"
-            $table->enum('type', ['income', 'expense', 'save']); // tipe kategori
+            $table->enum('type', ['income', 'expense', 'transfer']); // tipe kategori
             $table->string('icon')->nullable(); // bisa berupa nama ikon, opsional
             $table->timestamps();
         });

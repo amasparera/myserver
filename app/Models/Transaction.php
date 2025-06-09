@@ -22,7 +22,6 @@ class Transaction extends Model
         'account_id',
         'category_id',
         'amount',
-        'type',
         'description',
         'date',
     ];

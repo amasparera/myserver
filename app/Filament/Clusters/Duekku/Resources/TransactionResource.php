@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -44,32 +45,43 @@ class TransactionResource extends Resource
                             ->relationship('account', 'name')
                             ->required()
                             ->label('Akun'),
-                        Forms\Components\Select::make('type')
-                            ->options([
-                                'income' => 'Pemasukan',
-                                'expense' => 'Pengeluaran',
-                                'transfer' => 'Transfer',
-                            ])
-                            ->reactive()
-                            ->required()
-                            ->label('Jenis Transaksi'),
                         Forms\Components\Select::make('category_id')
                             ->relationship('category', 'name')
                             ->required()
-                            ->label('Kategori'),
+                            ->label('Kategori')->reactive()
+                            ->afterStateUpdated(function (Forms\Set $set, $state) {
+                                // Set the type based on the category type
+                                $category = \App\Models\Category::find($state);
+                                if ($category) {
+                                    $set('type', $category->type);
+                                }
+                            }),
                         Forms\Components\Select::make('account_id_to')
                             ->visible(fn($get) => $get('type') === 'transfer')
                             ->relationship('account', 'name')
                             ->required()
                             ->label('Akun Tujuan'),
+                        Forms\Components\Select::make('type')
+                            ->hidden(fn($get) => $get('category_id') === null)
+                            ->options([
+                                'income' => 'Pemasukan',
+                                'expense' => 'Pengeluaran',
+                                'transfer' => 'Transfer',
+                            ])
+                            ->required()
+                            ->label('Jenis Transaksi'),
                     ]),
 
                 Forms\Components\Section::make('Rincian Transaksi')
                     ->schema([
                         Forms\Components\TextInput::make('amount')
-                            ->numeric()
+                            ->label('Jumlah')
                             ->required()
-                            ->label('Jumlah'),
+                            ->prefix('IDR ')
+                            ->placeholder('0')
+                            ->mask(RawJs::make('$money($input, \'.\', \',\', 0, \'IDR \', \'\')')) // Menggunakan $money helper
+                            ->stripCharacters(',') // Hapus titik pemisah ribuan sebelum disimpan
+                            ->numeric(), // Pastikan input dianggap sebagai angka
                         Forms\Components\DatePicker::make('date')
                             ->required()
                             ->label('Tanggal'),
@@ -90,7 +102,7 @@ class TransactionResource extends Resource
                 ->label('Akun'),
             Tables\Columns\TextColumn::make('category.name')
                 ->label('Kategori'),
-            Tables\Columns\BadgeColumn::make('type')
+            Tables\Columns\BadgeColumn::make('category.type')
                 ->colors([
                     'success' => 'income',
                     'danger' => 'expense',

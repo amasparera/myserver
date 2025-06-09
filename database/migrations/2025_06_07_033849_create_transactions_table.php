@@ -13,7 +13,6 @@ return new class extends Migration
     // account_id (FK → accounts.id)
     // category_id (FK → categories.id)
     // amount             -- nominal uang
-    // type               -- enum: 'income' / 'expense' / 'transfer'
     // description (optional)
     // date               -- tanggal transaksi
     // created_at
@@ -33,7 +32,6 @@ return new class extends Migration
                 ->constrained('categories')
                 ->onDelete('cascade');
             $table->decimal('amount', 15, 2); // nominal uang
-            $table->enum('type', ['income', 'expense', 'transfer']); // tipe transaksi: 'income' / 'expense' / 'transfer'
             $table->string('description')->nullable(); // deskripsi transaksi, opsional
             $table->date('date'); // tanggal transaksi
             $table->timestamps();
