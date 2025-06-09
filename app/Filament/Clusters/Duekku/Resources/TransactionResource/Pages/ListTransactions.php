@@ -18,4 +18,13 @@ class ListTransactions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    // header widget
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TransactionResource\Widgets\TransactionsChart::class,
+            TransactionResource\Widgets\TransactionsStatsOverview::class,
+        ];
+    }
 }
